@@ -1,201 +1,205 @@
-/* RetroStyles.css */
-
-/* Retro Apple terminal vibe */
-.app-container {
+/* Global outer container (mimicking Code 2’s body) */
+.outer-container {
+  margin: 0;
+  padding: 0;
+  background-color: #111;
   min-height: 100vh;
-  background-image: url('/images/poetry-bg.jpg');
-  background-size: cover;
-  background-position: center;
-  background-color: black; /* fallback */
-  color: #FF00FF;
-  font-family: 'Courier New', monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Container styling */
-.container {
-  margin: 0 auto;
-  max-width: 64rem; /* approx Tailwind max-w-4xl */
-  padding: 2rem;
+/* iMac G3 style container */
+.imac-g3 {
+  background: linear-gradient(145deg, #9bd3e1, #7eb8d4);
+  border-radius: 30px 30px 20px 20px;
+  width: 90%;
+  max-width: 800px;
+  min-height: 600px;
+  box-shadow: 0 0 60px #2e94b9aa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 25px;
+  border: 6px solid #aee0f0;
 }
 
-/* Chat container styling */
-.chat-container {
-  background-color: black;
-  border: 1px solid #FF00FF;
-  border-radius: 0.75rem;
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+/* Logo styling */
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #003344;
+  margin-bottom: 10px;
 }
 
-/* Chat window */
+/* Screen styling: chat display area */
+.screen {
+  background-color: #000;
+  color: #ff00ff;
+  border-radius: 16px;
+  width: 100%;
+  flex: 1;
+  padding: 12px;
+  box-sizing: border-box;
+  font-size: 16px;
+  overflow-y: auto;
+  box-shadow: inset 0 0 10px #222;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Chat window inside screen */
 .chat-window {
   display: flex;
   flex-direction: column;
-  height: 700px;
-}
-
-/* Header styling */
-.header {
-  padding: 1rem;
-  background-color: black;
-  border-bottom: 1px solid #FF00FF;
-}
-.header h1 {
-  font-size: 1.5rem; /* text-2xl */
-  font-weight: 600;
-  color: #FF00FF;
-  display: flex;
-  align-items: center;
-}
-.header p {
-  font-size: 0.875rem; /* text-sm */
-  color: #FF00FF;
+  height: 100%;
 }
 
 /* Messages container */
 .messages {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem;
-  gap: 1.5rem;
+  margin-bottom: 10px;
 }
 
 /* Message styling */
 .message {
   display: flex;
   align-items: flex-start;
-  gap: 0.5rem;
+  margin-bottom: 10px;
 }
+
 .message.user {
   justify-content: flex-end;
 }
+
 .message.assistant {
   justify-content: flex-start;
 }
 
 /* Avatar styling */
 .avatar {
-  width: 2rem;
-  height: 2rem;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
+  background-color: #ff00ff;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #FF00FF;
-  color: black;
+  margin-right: 10px;
 }
 
 /* Message content container */
 .message-content {
-  display: flex;
-  flex-direction: column;
   max-width: 70%;
 }
 
 /* Message bubble styling */
 .message-bubble {
-  border-radius: 1rem;
-  padding: 1rem;
-  word-wrap: break-word;
+  background-color: #ff00ff;
+  color: #000;
+  border-radius: 16px;
+  padding: 10px;
+  margin-bottom: 5px;
 }
-.message.user .message-bubble {
-  background-color: #FF00FF;
-  color: black;
-}
+
 .message.assistant .message-bubble {
-  background-color: black;
-  border: 1px solid #FF00FF;
-  color: #FF00FF;
+  background-color: #000;
+  border: 1px solid #ff00ff;
+  color: #ff00ff;
 }
 
 /* Timestamp styling */
 .timestamp {
-  font-size: 0.75rem;
-  color: #FF00FF;
-  margin-top: 0.25rem;
-}
-
-/* Flickering terminal cursor */
-.flicker-cursor {
-  margin-left: 0.5rem;
-  animation: pulse 1s infinite;
-}
-@keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.5; }
-  100% { opacity: 1; }
-}
-
-/* Loading indicator styling */
-.loading-indicator {
-  display: flex;
-  align-items: center;
-}
-.loading-dots {
-  display: flex;
-  gap: 0.25rem;
-}
-.loading-dots div {
-  width: 0.5rem;
-  height: 0.5rem;
-  background-color: #FF00FF;
-  border-radius: 50%;
-  animation: bounce 1s infinite;
-}
-.loading-dots div:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.loading-dots div:nth-child(3) {
-  animation-delay: 0.3s;
-}
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-0.5rem); }
+  font-size: 12px;
+  color: #ff00ff;
 }
 
 /* Input container styling */
 .input-container {
-  padding: 1rem;
-  background-color: black;
-  border-top: 1px solid #FF00FF;
-}
-.input-container form {
   display: flex;
-  gap: 0.5rem;
-  align-items: center;
+  margin-top: 10px;
 }
+
+.input-container form {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .input-container input {
   flex: 1;
-  padding: 0.75rem;
-  background-color: black;
-  border: 1px solid #FF00FF;
-  border-radius: 0.5rem;
-  color: #FF00FF;
-}
-.input-container input::placeholder {
-  color: #FF00FF;
+  padding: 10px;
+  border: 1px solid #ff00ff;
+  border-radius: 8px;
+  background-color: #000;
+  color: #ff00ff;
 }
 
 /* Button styling */
 .button {
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  border: 1px solid #FF00FF;
+  padding: 10px;
+  border: 1px solid #ff00ff;
+  border-radius: 8px;
+  background-color: #ff00ff;
+  color: #000;
+  cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
 }
-.button.recording {
-  background-color: #FF00FF;
-  color: black;
-}
+
 .button.notRecording {
-  background-color: black;
-  color: #FF00FF;
+  background-color: #000;
+  color: #ff00ff;
 }
+
 .button:hover {
-  background-color: #FF00FF;
-  color: black;
+  background-color: #ff00ff;
+  color: #000;
 }
-.button.send {
-  background-color: #FF00FF;
-  color: black;
+
+/* Flicker cursor animation */
+.flicker-cursor {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Bottom curve element (iMac style) */
+.bottom-curve {
+  width: 100%;
+  height: 60px;
+  background: radial-gradient(circle at center, #b6ebff, #7eb8d4);
+  border-radius: 0 0 30px 30px;
+  margin-top: 10px;
+}
+
+/* Keyboard styling (decorative) */
+.keyboard {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 6px;
+  width: 400px;
+  margin-top: 20px;
+  padding: 12px 18px;
+  background-color: #d4f3fc;
+  border: 3px solid #aee0f0;
+  border-radius: 12px;
+  box-shadow: 0 0 25px #7eb8d4cc;
+}
+
+.key {
+  background-color: #eefcff;
+  border: 1px solid #a2c7d9;
+  border-radius: 4px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 11px;
+  box-shadow: inset -1px -1px 0 #cceaf5;
+  color: #003344;
 }
