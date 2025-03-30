@@ -1,163 +1,286 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bougie Bruja Oracle – iMac G3 Edition</title>
-  <style>
-    body {
-      margin: 0;
-      background-color: #111;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      font-family: 'Monaco', 'Courier New', monospace;
-    }
+'use client';
 
-    .imac-g3 {
-      background: linear-gradient(145deg, #9bd3e1, #7eb8d4);
-      border-radius: 30px 30px 20px 20px;
-      width: 360px;
-      height: 420px;
-      position: relative;
-      box-shadow: 0 0 60px #2e94b9aa;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-top: 25px;
-      border: 6px solid #aee0f0;
-    }
+import React, { useState, useRef, useEffect } from 'react';
+import { Mic, Square, Send, Volume2, User, Bot } from 'lucide-react';
+import './styles/globals.css';
 
-    .logo {
-      font-size: 16px;
-      font-weight: bold;
-      color: #003344;
-      margin-bottom: 10px;
-    }
+interface Message {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp?: number;
+  id: string;
+}
 
-    .screen {
-      background-color: #000;
-      color: #ff00ff;
-      border-radius: 16px;
-      width: 260px;
-      height: 190px;
-      padding: 12px;
-      box-sizing: border-box;
-      font-size: 13px;
-      overflow-y: auto;
-      box-shadow: inset 0 0 10px #222;
+export default function Home() {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      role: 'system',
+      content: 'Whomp is a whitty French poet whose writing is a mix of Ocean Vuong and Charles Bernstein',
+      id: 'system-prompt'
     }
+  ]);
+  const [input, setInput] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    .terminal-text::after {
-      content: '_';
-      animation: blink 1s infinite;
-    }
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
-    .bottom-curve {
-      width: 100%;
-      height: 60px;
-      background: radial-gradient(circle at center, #b6ebff, #7eb8d4);
-      border-radius: 0 0 30px 30px;
-      margin-top: auto;
-    }
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
-    .keyboard {
-      background-color: #d4f3fc;
-      margin-top: 20px;
-      padding: 12px 18px;
-      border-radius: 12px;
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 6px;
-      width: 400px;
-      box-shadow: 0 0 25px #7eb8d4cc;
-      border: 3px solid #aee0f0;
-    }
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      chunksRef.current = [];
 
-    .key {
-      background-color: #eefcff;
-      border: 1px solid #a2c7d9;
-      border-radius: 4px;
-      text-align: center;
-      padding: 6px 0;
-      font-size: 11px;
-      box-shadow: inset -1px -1px 0 #cceaf5;
-      color: #003344;
-    }
+      mediaRecorder.ondataavailable = (e) => {
+        chunksRef.current.push(e.data);
+      };
 
-    @keyframes blink {
-      0%, 50% { opacity: 1; }
-      51%, 100% { opacity: 0; }
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        await transcribeAudio(audioBlob);
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error('Error accessing microphone:', error);
     }
-  </style>
-</head>
-<body>
-  <div class="imac-g3">
-    <div class="logo">🌙 Bougie Bruja Oracle</div>
-    <div class="screen">
-      <div class="terminal-text">
-        > Welcome to the Oracle.<br>
-        > Initializing G3 vibes...<br>
-        > Tuning to cosmic frequency... DONE.<br><br>
-        > Type HELP to divine your path.
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const transcribeAudio = async (audioBlob: Blob) => {
+    try {
+      setIsLoading(true);
+      const formData = new FormData();
+      const file = new File([audioBlob], 'audio.webm', { type: 'audio/webm' });
+      formData.append('file', file);
+
+      const response = await fetch('/api/speech', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to transcribe audio');
+      }
+
+      const data = await response.json();
+      setInput(data.text);
+    } catch (error: any) {
+      console.error('Error transcribing audio:', error);
+      alert(error.message || 'Failed to transcribe audio');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const speakText = async (text: string) => {
+    try {
+      const response = await fetch('/api/speech', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate speech');
+      }
+
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audio.play();
+    } catch (error: any) {
+      console.error('Error generating speech:', error);
+      alert(error.message || 'Failed to generate speech');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+
+    const userMessage: Message = {
+      role: 'user',
+      content: input.trim(),
+      timestamp: Date.now(),
+      id: `user-${Date.now()}`
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [...messages, userMessage].map(msg => ({
+            role: msg.role,
+            content: msg.content
+          }))
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to get response');
+
+      const assistantMessage = await response.json();
+
+      setMessages(prev => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: assistantMessage.content,
+          timestamp: Date.now(),
+          id: `assistant-${Date.now()}`
+        }
+      ]);
+    } catch (error) {
+      console.error('Error getting completion:', error);
+      setMessages(prev => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: 'Sorry, I encountered an error. Please try again.',
+          timestamp: Date.now(),
+          id: `error-${Date.now()}`
+        }
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="imac-g3">
+        <div className="imac-logo">🌙 Bougie Bruja Oracle</div>
+        <div className="imac-screen">
+          <div>
+            &gt; Welcome to the Oracle.<br />
+            &gt; Initializing G3 vibes...<br />
+            &gt; Tuning to cosmic frequency... DONE.<br /><br />
+            &gt; Type HELP to divine your path.
+          </div>
+        </div>
+        <div className="bottom-curve" />
+      </div>
+
+      <div className="container mx-auto max-w-4xl px-4 py-8">
+        <div className="bg-white rounded-xl shadow-xl overflow-hidden">
+          <div className="h-[700px] flex flex-col">
+            <div className="flex-1 overflow-y-auto p-4 space-y-6">
+              {messages.slice(1).map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex items-start space-x-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  {message.role === 'assistant' && (
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                      <Bot size={20} className="text-blue-600" />
+                    </div>
+                  )}
+
+                  <div className={`flex flex-col max-w-[70%] ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
+                    <div
+                      className={`rounded-2xl p-4 ${message.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'}`}
+                    >
+                      <p className="whitespace-pre-wrap">{message.content}</p>
+                    </div>
+
+                    {message.role === 'assistant' && (
+                      <button
+                        onClick={() => speakText(message.content)}
+                        className="mt-2 text-gray-500 hover:text-gray-700 transition-colors"
+                        aria-label="Text to speech"
+                      >
+                        <Volume2 size={16} />
+                      </button>
+                    )}
+
+                    {message.timestamp && (
+                      <span className="text-xs text-gray-500 mt-1">
+                        {new Date(message.timestamp).toLocaleTimeString()}
+                      </span>
+                    )}
+                  </div>
+
+                  {message.role === 'user' && (
+                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                      <User size={20} className="text-gray-600" />
+                    </div>
+                  )}
+                </div>
+              ))}
+              {isLoading && (
+                <div className="flex justify-start items-center space-x-2">
+                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                    <Bot size={20} className="text-blue-600" />
+                  </div>
+                  <div className="bg-gray-100 rounded-2xl p-4">
+                    <div className="flex space-x-2">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
+            <div className="p-4 bg-white border-t border-gray-200">
+              <form onSubmit={handleSubmit} className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Type your message..."
+                  className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  disabled={isLoading}
+                />
+                <button
+                  type="button"
+                  onClick={isRecording ? stopRecording : startRecording}
+                  className={`p-3 rounded-lg transition-colors ${
+                    isRecording ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                  disabled={isLoading}
+                >
+                  {isRecording ? <Square size={20} /> : <Mic size={20} />}
+                </button>
+                <button
+                  type="submit"
+                  className="p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={!input.trim() || isLoading}
+                >
+                  <Send size={20} />
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="bottom-curve"></div>
-  </div>
-
-  <div class="keyboard">
-    <div class="key">ESC</div>
-    <div class="key">1</div>
-    <div class="key">2</div>
-    <div class="key">3</div>
-    <div class="key">4</div>
-    <div class="key">5</div>
-    <div class="key">6</div>
-    <div class="key">7</div>
-    <div class="key">8</div>
-    <div class="key">9</div>
-    <div class="key">0</div>
-    <div class="key">⌫</div>
-    <div class="key">TAB</div>
-    <div class="key">Q</div>
-    <div class="key">W</div>
-    <div class="key">E</div>
-    <div class="key">R</div>
-    <div class="key">T</div>
-    <div class="key">Y</div>
-    <div class="key">U</div>
-    <div class="key">I</div>
-    <div class="key">O</div>
-    <div class="key">P</div>
-    <div class="key">\</div>
-    <div class="key">CAPS</div>
-    <div class="key">A</div>
-    <div class="key">S</div>
-    <div class="key">D</div>
-    <div class="key">F</div>
-    <div class="key">G</div>
-    <div class="key">H</div>
-    <div class="key">J</div>
-    <div class="key">K</div>
-    <div class="key">L</div>
-    <div class="key">ENTER</div>
-    <div class="key">SHIFT</div>
-    <div class="key">Z</div>
-    <div class="key">X</div>
-    <div class="key">C</div>
-    <div class="key">V</div>
-    <div class="key">B</div>
-    <div class="key">N</div>
-    <div class="key">M</div>
-    <div class="key">,</div>
-    <div class="key">.</div>
-    <div class="key">/</div>
-    <div class="key">SHIFT</div>
-    <div class="key" style="grid-column: span 3">SPACE</div>
-    <div class="key">CMD</div>
-    <div class="key">CTRL</div>
-  </div>
-</body>
-</html>
+  );
+}
