@@ -182,17 +182,13 @@ export default function Home() {
   };
 
   return (
-    <div className="app-container">
-      <div className="container">
-        <div className="chat-container">
+    <div className="outer-container">
+      <div className="imac-g3">
+        <div className="logo">
+          AI Poet Chat <span className="flicker-cursor">▮</span>
+        </div>
+        <div className="screen">
           <div className="chat-window">
-            <div className="header">
-              <h1>
-                AI Poet Chat <span className="flicker-cursor">▮</span>
-              </h1>
-              <p>Chat with Whomp, the French AI poet</p>
-            </div>
-
             <div className="messages">
               {messages.slice(1).map((message) => (
                 <div key={message.id} className={`message ${message.role}`}>
@@ -201,7 +197,6 @@ export default function Home() {
                       <Bot size={20} />
                     </div>
                   )}
-
                   <div className="message-content">
                     <div className="message-bubble">
                       <p>{message.content}</p>
@@ -217,7 +212,6 @@ export default function Home() {
                       </span>
                     )}
                   </div>
-
                   {message.role === 'user' && (
                     <div className="avatar user">
                       <User size={20} />
@@ -242,7 +236,6 @@ export default function Home() {
               )}
               <div ref={messagesEndRef} />
             </div>
-
             <div className="input-container">
               <form onSubmit={handleSubmit}>
                 <input
@@ -267,6 +260,59 @@ export default function Home() {
             </div>
           </div>
         </div>
+        <div className="bottom-curve"></div>
+      </div>
+      <div className="keyboard">
+        <div className="key">ESC</div>
+        <div className="key">1</div>
+        <div className="key">2</div>
+        <div className="key">3</div>
+        <div className="key">4</div>
+        <div className="key">5</div>
+        <div className="key">6</div>
+        <div className="key">7</div>
+        <div className="key">8</div>
+        <div className="key">9</div>
+        <div className="key">0</div>
+        <div className="key">⌫</div>
+        <div className="key">TAB</div>
+        <div className="key">Q</div>
+        <div className="key">W</div>
+        <div className="key">E</div>
+        <div className="key">R</div>
+        <div className="key">T</div>
+        <div className="key">Y</div>
+        <div className="key">U</div>
+        <div className="key">I</div>
+        <div className="key">O</div>
+        <div className="key">P</div>
+        <div className="key">\</div>
+        <div className="key">CAPS</div>
+        <div className="key">A</div>
+        <div className="key">S</div>
+        <div className="key">D</div>
+        <div className="key">F</div>
+        <div className="key">G</div>
+        <div className="key">H</div>
+        <div className="key">J</div>
+        <div className="key">K</div>
+        <div className="key">L</div>
+        <div className="key">ENTER</div>
+        <div className="key">SHIFT</div>
+        <div className="key">Z</div>
+        <div className="key">X</div>
+        <div className="key">C</div>
+        <div className="key">V</div>
+        <div className="key">B</div>
+        <div className="key">N</div>
+        <div className="key">M</div>
+        <div className="key">,</div>
+        <div className="key">.</div>
+        <div className="key">/</div>
+        <div className="key">SHIFT</div>
+        <div className="key" style={{ gridColumn: 'span 3' }}>SPACE</div>
+        <div className="key">CMD</div>
+        <div className="key">CTRL</div>
       </div>
     </div>
   );
