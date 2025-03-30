@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Mic, Square, Send, Volume2, User, Bot } from 'lucide-react';
-import './styles/globals.css';
 
 interface Message {
   role: 'user' | 'assistant' | 'system';
@@ -75,6 +74,7 @@ export default function Home() {
       const response = await fetch('/api/speech', {
         method: 'POST',
         body: formData,
+        // Don't set Content-Type header - let the browser set it with the boundary
       });
 
       if (!response.ok) {
@@ -96,7 +96,9 @@ export default function Home() {
     try {
       const response = await fetch('/api/speech', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ text }),
       });
 
@@ -125,7 +127,7 @@ export default function Home() {
       timestamp: Date.now(),
       id: `user-${Date.now()}`
     };
-
+    
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
@@ -133,7 +135,9 @@ export default function Home() {
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           messages: [...messages, userMessage].map(msg => ({
             role: msg.role,
@@ -142,10 +146,12 @@ export default function Home() {
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to get response');
+      if (!response.ok) {
+        throw new Error('Failed to get response');
+      }
 
       const assistantMessage = await response.json();
-
+      
       setMessages(prev => [
         ...prev,
         {
@@ -172,42 +178,44 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <div className="imac-g3">
-        <div className="imac-logo">🌙 Bougie Bruja Oracle</div>
-        <div className="imac-screen">
-          <div>
-            &gt; Welcome to the Oracle.<br />
-            &gt; Initializing G3 vibes...<br />
-            &gt; Tuning to cosmic frequency... DONE.<br /><br />
-            &gt; Type HELP to divine your path.
-          </div>
-        </div>
-        <div className="bottom-curve" />
-      </div>
-
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
       <div className="container mx-auto max-w-4xl px-4 py-8">
         <div className="bg-white rounded-xl shadow-xl overflow-hidden">
           <div className="h-[700px] flex flex-col">
+            <div className="p-4 bg-gray-50 border-b border-gray-200">
+              <h1 className="text-2xl font-semibold text-gray-800">AI Poet Chat</h1>
+              <p className="text-sm text-gray-600">Chat with Whomp, the French AI poet</p>
+            </div>
+
             <div className="flex-1 overflow-y-auto p-4 space-y-6">
               {messages.slice(1).map((message) => (
                 <div
                   key={message.id}
-                  className={`flex items-start space-x-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex items-start space-x-2 ${
+                    message.role === 'user' ? 'justify-end' : 'justify-start'
+                  }`}
                 >
                   {message.role === 'assistant' && (
                     <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
                       <Bot size={20} className="text-blue-600" />
                     </div>
                   )}
-
-                  <div className={`flex flex-col max-w-[70%] ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
+                  
+                  <div
+                    className={`flex flex-col max-w-[70%] ${
+                      message.role === 'user' ? 'items-end' : 'items-start'
+                    }`}
+                  >
                     <div
-                      className={`rounded-2xl p-4 ${message.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'}`}
+                      className={`rounded-2xl p-4 ${
+                        message.role === 'user'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-100 text-gray-800'
+                      }`}
                     >
                       <p className="whitespace-pre-wrap">{message.content}</p>
                     </div>
-
+                    
                     {message.role === 'assistant' && (
                       <button
                         onClick={() => speakText(message.content)}
@@ -217,7 +225,7 @@ export default function Home() {
                         <Volume2 size={16} />
                       </button>
                     )}
-
+                    
                     {message.timestamp && (
                       <span className="text-xs text-gray-500 mt-1">
                         {new Date(message.timestamp).toLocaleTimeString()}
@@ -232,6 +240,7 @@ export default function Home() {
                   )}
                 </div>
               ))}
+              
               {isLoading && (
                 <div className="flex justify-start items-center space-x-2">
                   <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
@@ -263,7 +272,9 @@ export default function Home() {
                   type="button"
                   onClick={isRecording ? stopRecording : startRecording}
                   className={`p-3 rounded-lg transition-colors ${
-                    isRecording ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                    isRecording
+                      ? 'bg-red-500 hover:bg-red-600 text-white'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                   }`}
                   disabled={isLoading}
                 >
