@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Mic, Square, Send, Volume2, User, Bot } from 'lucide-react';
+import './RetroStyles.css';
 
 interface Message {
   role: 'user' | 'assistant' | 'system';
@@ -14,7 +15,8 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'system',
-      content: 'Whomp is a whitty French poet whose writing is a mix of Ocean Vuong and Charles Bernstein',
+      content:
+        'Whomp is a whitty French poet whose writing is a mix of Ocean Vuong and Charles Bernstein',
       id: 'system-prompt'
     }
   ]);
@@ -33,7 +35,7 @@ export default function Home() {
     scrollToBottom();
   }, [messages]);
 
-  // 🧠 Add startup chime on mount
+  // Play startup chime on component mount
   useEffect(() => {
     const audio = new Audio('/sounds/mac-startup.mp3');
     audio.volume = 0.6;
@@ -80,7 +82,7 @@ export default function Home() {
 
       const response = await fetch('/api/speech', {
         method: 'POST',
-        body: formData,
+        body: formData
       });
 
       if (!response.ok) {
@@ -102,10 +104,8 @@ export default function Home() {
     try {
       const response = await fetch('/api/speech', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
       });
 
       if (!response.ok) {
@@ -133,7 +133,7 @@ export default function Home() {
       timestamp: Date.now(),
       id: `user-${Date.now()}`
     };
-    
+
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
@@ -141,15 +141,13 @@ export default function Home() {
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: [...messages, userMessage].map(msg => ({
             role: msg.role,
             content: msg.content
           }))
-        }),
+        })
       });
 
       if (!response.ok) {
@@ -157,7 +155,7 @@ export default function Home() {
       }
 
       const assistantMessage = await response.json();
-      
+
       setMessages(prev => [
         ...prev,
         {
@@ -184,82 +182,60 @@ export default function Home() {
   };
 
   return (
-    // 💻 Retro Apple terminal background + style
-    <div className="min-h-screen bg-black bg-cover bg-center text-magenta font-mono" style={{ backgroundImage: "url('/images/poetry-bg.jpg')" }}>
-      <div className="container mx-auto max-w-4xl px-4 py-8">
-        <div className="bg-black rounded-xl shadow-xl overflow-hidden border border-magenta">
-          <div className="h-[700px] flex flex-col">
-            <div className="p-4 bg-black border-b border-magenta">
-              <h1 className="text-2xl font-semibold text-magenta flex items-center">
-                AI Poet Chat <span className="ml-2 animate-pulse">▮</span>
+    <div className="app-container">
+      <div className="container">
+        <div className="chat-container">
+          <div className="chat-window">
+            <div className="header">
+              <h1>
+                AI Poet Chat <span className="flicker-cursor">▮</span>
               </h1>
-              <p className="text-sm text-magenta">Chat with Whomp, the French AI poet</p>
+              <p>Chat with Whomp, the French AI poet</p>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-6">
+            <div className="messages">
               {messages.slice(1).map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex items-start space-x-2 ${
-                    message.role === 'user' ? 'justify-end' : 'justify-start'
-                  }`}
-                >
+                <div key={message.id} className={`message ${message.role}`}>
                   {message.role === 'assistant' && (
-                    <div className="w-8 h-8 rounded-full bg-magenta flex items-center justify-center">
-                      <Bot size={20} className="text-black" />
+                    <div className="avatar assistant">
+                      <Bot size={20} />
                     </div>
                   )}
-                  
-                  <div
-                    className={`flex flex-col max-w-[70%] ${
-                      message.role === 'user' ? 'items-end' : 'items-start'
-                    }`}
-                  >
-                    <div
-                      className={`rounded-2xl p-4 ${
-                        message.role === 'user'
-                          ? 'bg-magenta text-black'
-                          : 'bg-black border border-magenta text-magenta'
-                      }`}
-                    >
-                      <p className="whitespace-pre-wrap">{message.content}</p>
+
+                  <div className="message-content">
+                    <div className="message-bubble">
+                      <p>{message.content}</p>
                     </div>
-                    
                     {message.role === 'assistant' && (
-                      <button
-                        onClick={() => speakText(message.content)}
-                        className="mt-2 text-magenta hover:text-white transition-colors"
-                        aria-label="Text to speech"
-                      >
+                      <button onClick={() => speakText(message.content)} aria-label="Text to speech">
                         <Volume2 size={16} />
                       </button>
                     )}
-                    
                     {message.timestamp && (
-                      <span className="text-xs text-magenta mt-1">
+                      <span className="timestamp">
                         {new Date(message.timestamp).toLocaleTimeString()}
                       </span>
                     )}
                   </div>
 
                   {message.role === 'user' && (
-                    <div className="w-8 h-8 rounded-full bg-magenta flex items-center justify-center">
-                      <User size={20} className="text-black" />
+                    <div className="avatar user">
+                      <User size={20} />
                     </div>
                   )}
                 </div>
               ))}
-              
+
               {isLoading && (
-                <div className="flex justify-start items-center space-x-2">
-                  <div className="w-8 h-8 rounded-full bg-magenta flex items-center justify-center">
-                    <Bot size={20} className="text-black" />
+                <div className="message assistant">
+                  <div className="avatar assistant">
+                    <Bot size={20} />
                   </div>
-                  <div className="bg-black border border-magenta rounded-2xl p-4">
-                    <div className="flex space-x-2">
-                      <div className="w-2 h-2 bg-magenta rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                      <div className="w-2 h-2 bg-magenta rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                      <div className="w-2 h-2 bg-magenta rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                  <div className="loading-indicator">
+                    <div className="loading-dots">
+                      <div></div>
+                      <div></div>
+                      <div></div>
                     </div>
                   </div>
                 </div>
@@ -267,33 +243,24 @@ export default function Home() {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-4 bg-black border-t border-magenta">
-              <form onSubmit={handleSubmit} className="flex items-center space-x-2">
+            <div className="input-container">
+              <form onSubmit={handleSubmit}>
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Type your message..."
-                  className="flex-1 p-3 bg-black border border-magenta rounded-lg text-magenta placeholder-magenta focus:outline-none focus:ring-2 focus:ring-magenta"
                   disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={isRecording ? stopRecording : startRecording}
-                  className={`p-3 rounded-lg border border-magenta transition-colors ${
-                    isRecording
-                      ? 'bg-magenta text-black'
-                      : 'bg-black text-magenta hover:bg-magenta hover:text-black'
-                  }`}
+                  className={`button ${isRecording ? 'recording' : 'notRecording'}`}
                   disabled={isLoading}
                 >
                   {isRecording ? <Square size={20} /> : <Mic size={20} />}
                 </button>
-                <button
-                  type="submit"
-                  className="p-3 bg-magenta text-black rounded-lg hover:bg-white hover:text-magenta transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={!input.trim() || isLoading}
-                >
+                <button type="submit" className="button send" disabled={!input.trim() || isLoading}>
                   <Send size={20} />
                 </button>
               </form>
