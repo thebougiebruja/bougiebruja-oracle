@@ -185,7 +185,7 @@ export default function Home() {
     <div className="outer-container">
       <div className="imac-g3">
         <div className="logo">
-          AI Poet Chat <span className="flicker-cursor">▮</span>
+         🌙 Bougie Bruja Oracle <span className="flicker-cursor">▮</span>
         </div>
         <div className="screen">
           <div className="chat-window">
