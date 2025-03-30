@@ -1,8 +1,10 @@
-/** @type {import('tailwindcss').Config} */
-export default {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-  theme: {
-    extend: {},
+theme: {
+  extend: {
+    colors: {
+      magenta: '#FF00FF',
+    },
+    fontFamily: {
+      mono: ['Courier New', 'monospace'],
+    },
   },
-  plugins: [],
-};
+}
