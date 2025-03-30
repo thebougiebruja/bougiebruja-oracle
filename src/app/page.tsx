@@ -33,6 +33,13 @@ export default function Home() {
     scrollToBottom();
   }, [messages]);
 
+  // 🧠 Add startup chime on mount
+  useEffect(() => {
+    const audio = new Audio('/sounds/mac-startup.mp3');
+    audio.volume = 0.6;
+    audio.play().catch(err => console.log('Autoplay prevented:', err));
+  }, []);
+
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -74,7 +81,6 @@ export default function Home() {
       const response = await fetch('/api/speech', {
         method: 'POST',
         body: formData,
-        // Don't set Content-Type header - let the browser set it with the boundary
       });
 
       if (!response.ok) {
@@ -178,14 +184,16 @@ export default function Home() {
   };
 
   return (
-    // 🔁 Background image applied here — put your image at /public/images/poetry-bg.jpg
-    <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: "url('https://plus.unsplash.com/premium_photo-1714618937022-97adf8e67cb6?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cmV0cm8lMjBjb21wdXRlcnxlbnwwfHwwfHx8MA%3D%3D')" }}>
+    // 💻 Retro Apple terminal background + style
+    <div className="min-h-screen bg-black bg-cover bg-center text-magenta font-mono" style={{ backgroundImage: "url('/images/poetry-bg.jpg')" }}>
       <div className="container mx-auto max-w-4xl px-4 py-8">
-        <div className="bg-white rounded-xl shadow-xl overflow-hidden">
+        <div className="bg-black rounded-xl shadow-xl overflow-hidden border border-magenta">
           <div className="h-[700px] flex flex-col">
-            <div className="p-4 bg-gray-50 border-b border-gray-200">
-              <h1 className="text-2xl font-semibold text-gray-800">AI Poet Chat</h1>
-              <p className="text-sm text-gray-600">Chat with Whomp, the French AI poet</p>
+            <div className="p-4 bg-black border-b border-magenta">
+              <h1 className="text-2xl font-semibold text-magenta flex items-center">
+                AI Poet Chat <span className="ml-2 animate-pulse">▮</span>
+              </h1>
+              <p className="text-sm text-magenta">Chat with Whomp, the French AI poet</p>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-6">
@@ -197,8 +205,8 @@ export default function Home() {
                   }`}
                 >
                   {message.role === 'assistant' && (
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                      <Bot size={20} className="text-blue-600" />
+                    <div className="w-8 h-8 rounded-full bg-magenta flex items-center justify-center">
+                      <Bot size={20} className="text-black" />
                     </div>
                   )}
                   
@@ -210,8 +218,8 @@ export default function Home() {
                     <div
                       className={`rounded-2xl p-4 ${
                         message.role === 'user'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100 text-gray-800'
+                          ? 'bg-magenta text-black'
+                          : 'bg-black border border-magenta text-magenta'
                       }`}
                     >
                       <p className="whitespace-pre-wrap">{message.content}</p>
@@ -220,7 +228,7 @@ export default function Home() {
                     {message.role === 'assistant' && (
                       <button
                         onClick={() => speakText(message.content)}
-                        className="mt-2 text-gray-500 hover:text-gray-700 transition-colors"
+                        className="mt-2 text-magenta hover:text-white transition-colors"
                         aria-label="Text to speech"
                       >
                         <Volume2 size={16} />
@@ -228,15 +236,15 @@ export default function Home() {
                     )}
                     
                     {message.timestamp && (
-                      <span className="text-xs text-gray-500 mt-1">
+                      <span className="text-xs text-magenta mt-1">
                         {new Date(message.timestamp).toLocaleTimeString()}
                       </span>
                     )}
                   </div>
 
                   {message.role === 'user' && (
-                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                      <User size={20} className="text-gray-600" />
+                    <div className="w-8 h-8 rounded-full bg-magenta flex items-center justify-center">
+                      <User size={20} className="text-black" />
                     </div>
                   )}
                 </div>
@@ -244,14 +252,14 @@ export default function Home() {
               
               {isLoading && (
                 <div className="flex justify-start items-center space-x-2">
-                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                    <Bot size={20} className="text-blue-600" />
+                  <div className="w-8 h-8 rounded-full bg-magenta flex items-center justify-center">
+                    <Bot size={20} className="text-black" />
                   </div>
-                  <div className="bg-gray-100 rounded-2xl p-4">
+                  <div className="bg-black border border-magenta rounded-2xl p-4">
                     <div className="flex space-x-2">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                      <div className="w-2 h-2 bg-magenta rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                      <div className="w-2 h-2 bg-magenta rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                      <div className="w-2 h-2 bg-magenta rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                     </div>
                   </div>
                 </div>
@@ -259,23 +267,23 @@ export default function Home() {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-4 bg-white border-t border-gray-200">
+            <div className="p-4 bg-black border-t border-magenta">
               <form onSubmit={handleSubmit} className="flex items-center space-x-2">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Type your message..."
-                  className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 p-3 bg-black border border-magenta rounded-lg text-magenta placeholder-magenta focus:outline-none focus:ring-2 focus:ring-magenta"
                   disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={isRecording ? stopRecording : startRecording}
-                  className={`p-3 rounded-lg transition-colors ${
+                  className={`p-3 rounded-lg border border-magenta transition-colors ${
                     isRecording
-                      ? 'bg-red-500 hover:bg-red-600 text-white'
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                      ? 'bg-magenta text-black'
+                      : 'bg-black text-magenta hover:bg-magenta hover:text-black'
                   }`}
                   disabled={isLoading}
                 >
@@ -283,7 +291,7 @@ export default function Home() {
                 </button>
                 <button
                   type="submit"
-                  className="p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-3 bg-magenta text-black rounded-lg hover:bg-white hover:text-magenta transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={!input.trim() || isLoading}
                 >
                   <Send size={20} />
