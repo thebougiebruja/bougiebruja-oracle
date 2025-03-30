@@ -236,7 +236,10 @@ export default function Home() {
               )}
               <div ref={messagesEndRef} />
             </div>
-            <div className="input-container">
+          </div>
+        </div>
+        <div className="bottom-curve">
+        <div className="input-container">
               <form onSubmit={handleSubmit}>
                 <input
                   type="text"
@@ -258,9 +261,7 @@ export default function Home() {
                 </button>
               </form>
             </div>
-          </div>
         </div>
-        <div className="bottom-curve"></div>
       </div>
       <div className="keyboard">
         <div className="key">ESC</div>
