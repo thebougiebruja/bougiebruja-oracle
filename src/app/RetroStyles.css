@@ -48,13 +48,14 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  height: 600px !important;
 }
 
 /* Chat window inside screen */
 .chat-window {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 600px !important;
 }
 
 /* Messages container */
