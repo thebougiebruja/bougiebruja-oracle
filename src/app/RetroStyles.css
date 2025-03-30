@@ -1,0 +1,201 @@
+/* RetroStyles.css */
+
+/* Retro Apple terminal vibe */
+.app-container {
+  min-height: 100vh;
+  background-image: url('/images/poetry-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-color: black; /* fallback */
+  color: #FF00FF;
+  font-family: 'Courier New', monospace;
+}
+
+/* Container styling */
+.container {
+  margin: 0 auto;
+  max-width: 64rem; /* approx Tailwind max-w-4xl */
+  padding: 2rem;
+}
+
+/* Chat container styling */
+.chat-container {
+  background-color: black;
+  border: 1px solid #FF00FF;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Chat window */
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  height: 700px;
+}
+
+/* Header styling */
+.header {
+  padding: 1rem;
+  background-color: black;
+  border-bottom: 1px solid #FF00FF;
+}
+.header h1 {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 600;
+  color: #FF00FF;
+  display: flex;
+  align-items: center;
+}
+.header p {
+  font-size: 0.875rem; /* text-sm */
+  color: #FF00FF;
+}
+
+/* Messages container */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  gap: 1.5rem;
+}
+
+/* Message styling */
+.message {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.message.user {
+  justify-content: flex-end;
+}
+.message.assistant {
+  justify-content: flex-start;
+}
+
+/* Avatar styling */
+.avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FF00FF;
+  color: black;
+}
+
+/* Message content container */
+.message-content {
+  display: flex;
+  flex-direction: column;
+  max-width: 70%;
+}
+
+/* Message bubble styling */
+.message-bubble {
+  border-radius: 1rem;
+  padding: 1rem;
+  word-wrap: break-word;
+}
+.message.user .message-bubble {
+  background-color: #FF00FF;
+  color: black;
+}
+.message.assistant .message-bubble {
+  background-color: black;
+  border: 1px solid #FF00FF;
+  color: #FF00FF;
+}
+
+/* Timestamp styling */
+.timestamp {
+  font-size: 0.75rem;
+  color: #FF00FF;
+  margin-top: 0.25rem;
+}
+
+/* Flickering terminal cursor */
+.flicker-cursor {
+  margin-left: 0.5rem;
+  animation: pulse 1s infinite;
+}
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* Loading indicator styling */
+.loading-indicator {
+  display: flex;
+  align-items: center;
+}
+.loading-dots {
+  display: flex;
+  gap: 0.25rem;
+}
+.loading-dots div {
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #FF00FF;
+  border-radius: 50%;
+  animation: bounce 1s infinite;
+}
+.loading-dots div:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.loading-dots div:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-0.5rem); }
+}
+
+/* Input container styling */
+.input-container {
+  padding: 1rem;
+  background-color: black;
+  border-top: 1px solid #FF00FF;
+}
+.input-container form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.input-container input {
+  flex: 1;
+  padding: 0.75rem;
+  background-color: black;
+  border: 1px solid #FF00FF;
+  border-radius: 0.5rem;
+  color: #FF00FF;
+}
+.input-container input::placeholder {
+  color: #FF00FF;
+}
+
+/* Button styling */
+.button {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #FF00FF;
+  transition: background-color 0.2s, color 0.2s;
+}
+.button.recording {
+  background-color: #FF00FF;
+  color: black;
+}
+.button.notRecording {
+  background-color: black;
+  color: #FF00FF;
+}
+.button:hover {
+  background-color: #FF00FF;
+  color: black;
+}
+.button.send {
+  background-color: #FF00FF;
+  color: black;
+}
