@@ -178,7 +178,8 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+    // 🔁 Background image applied here — put your image at /public/images/poetry-bg.jpg
+    <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: "url('https://plus.unsplash.com/premium_photo-1714618937022-97adf8e67cb6?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cmV0cm8lMjBjb21wdXRlcnxlbnwwfHwwfHx8MA%3D%3D')" }}>
       <div className="container mx-auto max-w-4xl px-4 py-8">
         <div className="bg-white rounded-xl shadow-xl overflow-hidden">
           <div className="h-[700px] flex flex-col">
